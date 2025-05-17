@@ -1,0 +1,49 @@
+import {
+    getRedirectGoogleResult,
+    signWithGooglePopup,
+    signWithGoogleRedirect
+} from "./firebase.utils";
+import { useEffect } from "react";
+
+const TestComponent = () => {
+
+    useEffect(() => {
+        async function getGoogleResult() {
+            console.log("Проверяем результаты редиректа...");
+            try {
+                const response = await getRedirectGoogleResult();
+                console.log("Сырой ответ от getRedirectResult:", response);
+
+                if (response) {
+                    const user = response.user;
+                    console.log('Успешная авторизация через redirect:', user);
+                } else {
+                    console.log('Нет данных авторизации через redirect');
+                }
+            } catch (error) {
+                console.error('Ошибка при получении результата редиректа:', error.code, error.message);
+            }
+        }
+        getGoogleResult();
+    }, []);
+
+
+    const logGoogleRedirectUser = async () => {
+        await signWithGoogleRedirect();
+    }
+
+    const logGooglePopupUser = async () => {
+        const { user } = await signWithGooglePopup();
+        console.log( { user } )
+    }
+
+
+    return (
+        <div className='flex flex-col items-center justify-center text-black text gap-5 mt-5'>
+            <button onClick={ logGoogleRedirectUser } className='cursor-pointer border'>sign With Redirect</button>
+            <button onClick={ logGooglePopupUser } className='cursor-pointer border'>sign With Popup</button>
+        </div>
+    );
+};
+
+export default TestComponent;
