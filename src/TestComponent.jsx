@@ -21,7 +21,7 @@ const TestComponent = () => {
 
         // Очистка подписки при размонтировании компонента
         return () => unsubscribe();
-    }, [ auth ] );
+    }, [] );
 
     useEffect( () => {
         async function getGoogleResult() {
