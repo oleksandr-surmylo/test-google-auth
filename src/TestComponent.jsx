@@ -1,31 +1,48 @@
 import {
     getRedirectGoogleResult,
     signWithGooglePopup,
-    signWithGoogleRedirect
+    signWithGoogleRedirect,
+    auth
 } from "./firebase.utils";
+import { onAuthStateChanged } from "firebase/auth";
 import { useEffect } from "react";
 
 const TestComponent = () => {
 
-    useEffect(() => {
+    useEffect( () => {
+        // Подписка на изменения состояния аутентификации
+        const unsubscribe = onAuthStateChanged( auth, ( user ) => {
+            if ( user ) {
+                console.log( "Пользователь аутентифицирован:", user );
+            } else {
+                console.log( "Пользователь вышел или не аутентифицирован" );
+            }
+        } );
+
+        // Очистка подписки при размонтировании компонента
+        return () => unsubscribe();
+    }, [ auth ] );
+
+    useEffect( () => {
         async function getGoogleResult() {
-            console.log("Проверяем результаты редиректа...");
+            console.log( "Проверяем результаты редиректа..." );
             try {
                 const response = await getRedirectGoogleResult();
-                console.log("Сырой ответ от getRedirectResult:", response);
+                console.log( "Сырой ответ от getRedirectResult:", response );
 
-                if (response) {
+                if ( response ) {
                     const user = response.user;
-                    console.log('Успешная авторизация через redirect:', user);
+                    console.log( 'Успешная авторизация через redirect:', user );
                 } else {
-                    console.log('Нет данных авторизации через redirect');
+                    console.log( 'Нет данных авторизации через redirect' );
                 }
-            } catch (error) {
-                console.error('Ошибка при получении результата редиректа:', error.code, error.message);
+            } catch ( error ) {
+                console.error( 'Ошибка при получении результата редиректа:', error.code, error.message );
             }
         }
+
         getGoogleResult();
-    }, []);
+    }, [] );
 
 
     const logGoogleRedirectUser = async () => {
